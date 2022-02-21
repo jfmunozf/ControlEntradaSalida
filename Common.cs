@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,18 +17,78 @@ namespace ControlEntradaSalida
         public static string usuario = null;
         public static string contrasena = null;
         public static string datadir = null;
+
+        private uint iLastErr = 0;
+
+        public bool ISAPIQuery(string requestURL, string inputParam, out string outputResult, out string outputStatus)
+        {
+            bool retval = true;
+
+            outputResult = null;
+            outputStatus = null;
+            string msg = null;
+
+            Common cmn = new Common();
+            //bool retlogin = cmn.Login(Common.ip, Common.puerto, Common.usuario, Common.contrasena, out msg);
+            bool retlogin = true;
+
+            if (!retlogin)
+            {
+                retval = false;
+            }
+            else
+            {
+                HCNetSDK.NET_DVR_XML_CONFIG_INPUT pInputXml = new HCNetSDK.NET_DVR_XML_CONFIG_INPUT();
+                Int32 nInSize = Marshal.SizeOf(pInputXml);
+                pInputXml.dwSize = (uint)nInSize;
+
+                string strRequestUrl = requestURL;
+                uint dwRequestUrlLen = (uint)strRequestUrl.Length;
+                pInputXml.lpRequestUrl = Marshal.StringToHGlobalAnsi(strRequestUrl);
+                pInputXml.dwRequestUrlLen = dwRequestUrlLen;
+
+                string strInputParam = inputParam;
+
+                pInputXml.lpInBuffer = Marshal.StringToHGlobalAnsi(strInputParam);
+                pInputXml.dwInBufferSize = (uint)strInputParam.Length;
+
+                HCNetSDK.NET_DVR_XML_CONFIG_OUTPUT pOutputXml = new HCNetSDK.NET_DVR_XML_CONFIG_OUTPUT();
+                pOutputXml.dwSize = (uint)Marshal.SizeOf(pInputXml);
+                pOutputXml.lpOutBuffer = Marshal.AllocHGlobal(3 * 1024 * 1024);
+                pOutputXml.dwOutBufferSize = 3 * 1024 * 1024;
+                pOutputXml.lpStatusBuffer = Marshal.AllocHGlobal(4096 * 4);
+                pOutputXml.dwStatusSize = 4096 * 4;
+
+                if (!HCNetSDK.NET_DVR_STDXMLConfig(Common.m_UserID, ref pInputXml, ref pOutputXml))
+                {
+                    iLastErr = HCNetSDK.NET_DVR_GetLastError();
+                    outputResult = "NET_DVR_STDXMLConfig failed, error code= " + iLastErr;
+                    retval = false;
+                }
+                else
+                {
+                    string strOutputParam = Marshal.PtrToStringAnsi(pOutputXml.lpOutBuffer);
+                    outputResult = Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(strOutputParam));
+                    outputStatus = Marshal.PtrToStringAnsi(pOutputXml.lpStatusBuffer);
+
+                }
+                Marshal.FreeHGlobal(pInputXml.lpRequestUrl);
+                Marshal.FreeHGlobal(pOutputXml.lpOutBuffer);
+                Marshal.FreeHGlobal(pOutputXml.lpStatusBuffer);
+            }
+
+
+
+            return retval;
+        }
+
+
+
         public string obtenerCadenaConexion()
         {
             string cadenaConexion = null;
-            ConnectionStringSettingsCollection settings = ConfigurationManager.ConnectionStrings;
-            Console.WriteLine(settings.ToString());
-            if (settings != null)
-            {
-                foreach (ConnectionStringSettings cs in settings)
-                {
-                    cadenaConexion = cs.ConnectionString;
-                }
-            }
+            cadenaConexion = ConfigurationManager.ConnectionStrings["mysql"].ConnectionString;
+
             return cadenaConexion;
         }
 
@@ -55,7 +116,7 @@ namespace ControlEntradaSalida
                     Directory.CreateDirectory(commonData);
                 retval = true;
                 datadir = commonData;
-            } catch (Exception ex)
+            } catch
             {
                 retval = false;
             }

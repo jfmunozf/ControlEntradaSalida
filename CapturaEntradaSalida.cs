@@ -78,7 +78,16 @@ namespace ControlEntradaSalida
         {
             if (Common.m_UserID < 0)
             {
-                MessageBox.Show("Please Login First!");
+                MessageBox.Show("Primero inicie sesión en el dispositivo bimétrico", "Inicio de sesión en dispositivo biométrico", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            Common cmn = new Common();
+            string msg = null;
+            bool ret = cmn.Login(Common.ip, Common.puerto, Common.usuario, Common.contrasena, out msg);
+            if (!ret)
+            {
+                MessageBox.Show("Falló el inicio de sesión en el dispositivo biométrico. Se canecla operación de captura de eventos en dispositivo", "Inicio de sesión en dispositivo", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             else
@@ -301,24 +310,17 @@ namespace ControlEntradaSalida
             })); 
         }
 
-        private void ConectarBaseDatos()
-        {
-            Common cmn = new Common();            
-            string connstr = cmn.obtenerCadenaConexion();
-            bd = new BaseDatosMySQL();
-            bd.conectarMySQL(connstr);
-        }
-
-
-        
-
-
-
         private string ObtenerNombreEmpleado(string documento)
         {
             string retval = null;
-            
-            if (this.bd.conn != null)
+
+           
+            Common cmn = new Common();
+            string connstr = cmn.obtenerCadenaConexion();
+            BaseDatosMySQL bd = new BaseDatosMySQL();
+            bd.conectarMySQL(connstr);
+
+            if (bd.conn != null)
             {
                 string sql = "SELECT * FROM empleados WHERE documento = @documento";
                 try
@@ -346,20 +348,18 @@ namespace ControlEntradaSalida
                 MessageBox.Show(bd.errormsg);
             }
 
-
             return retval;
-
         }
 
         private void GestionEventos_Load(object sender, EventArgs e)
         {
-            ConectarBaseDatos();
+            
             Deploy();
         }
 
         private void GestionEventos_FormClosing(object sender, FormClosingEventArgs e)
         {
-            bd.desconectarMySQL();           
+            
             bool ret = HCNetSDK.NET_DVR_CloseAlarmChan(this.lAlarmHandle);
             
         }

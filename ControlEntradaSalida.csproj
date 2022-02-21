@@ -179,6 +179,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="InformeEventos.rdlc" />
     <None Include="Properties\DataSources\InformeEventos.datasource" />
@@ -206,6 +207,21 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NewItem_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CaptureFrame_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Save_grey_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DeleteAllRows_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Filter_16x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -29,8 +29,8 @@ namespace ControlEntradaSalida
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.buttonFiltrar = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.textBoxTarjeta = new System.Windows.Forms.TextBox();
             this.cmbEstado = new System.Windows.Forms.ComboBox();
@@ -42,19 +42,22 @@ namespace ControlEntradaSalida
             this.nombres = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.apellidos = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.foto = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.buttonNuevo = new System.Windows.Forms.Button();
-            this.buttonEliminar = new System.Windows.Forms.Button();
-            this.buttonAgregar = new System.Windows.Forms.Button();
-            this.buttonCapturarFoto = new System.Windows.Forms.Button();
             this.textBoxApellidos = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.textBoxNombres = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.textBoxDocumento = new System.Windows.Forms.TextBox();
+            this.buttonFiltrar = new System.Windows.Forms.Button();
+            this.buttonNuevo = new System.Windows.Forms.Button();
+            this.buttonEliminar = new System.Windows.Forms.Button();
+            this.buttonAgregar = new System.Windows.Forms.Button();
+            this.buttonCapturarFoto = new System.Windows.Forms.Button();
             this.pictureBoxUsuario = new System.Windows.Forms.PictureBox();
+            this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxUsuario)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -82,20 +85,10 @@ namespace ControlEntradaSalida
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             // 
-            // buttonFiltrar
-            // 
-            this.buttonFiltrar.Location = new System.Drawing.Point(533, 177);
-            this.buttonFiltrar.Name = "buttonFiltrar";
-            this.buttonFiltrar.Size = new System.Drawing.Size(113, 23);
-            this.buttonFiltrar.TabIndex = 15;
-            this.buttonFiltrar.Text = "&Filtrar";
-            this.buttonFiltrar.UseVisualStyleBackColor = true;
-            this.buttonFiltrar.Click += new System.EventHandler(this.buttonFiltrar_Click);
-            // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(448, 19);
+            this.label6.Location = new System.Drawing.Point(530, 16);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(60, 13);
             this.label6.TabIndex = 28;
@@ -103,7 +96,7 @@ namespace ControlEntradaSalida
             // 
             // textBoxTarjeta
             // 
-            this.textBoxTarjeta.Location = new System.Drawing.Point(451, 34);
+            this.textBoxTarjeta.Location = new System.Drawing.Point(533, 34);
             this.textBoxTarjeta.Name = "textBoxTarjeta";
             this.textBoxTarjeta.ReadOnly = true;
             this.textBoxTarjeta.Size = new System.Drawing.Size(195, 20);
@@ -115,16 +108,17 @@ namespace ControlEntradaSalida
             this.cmbEstado.Items.AddRange(new object[] {
             "ACTIVO",
             "INACTIVO"});
-            this.cmbEstado.Location = new System.Drawing.Point(282, 34);
+            this.cmbEstado.Location = new System.Drawing.Point(312, 33);
             this.cmbEstado.Name = "cmbEstado";
             this.cmbEstado.Size = new System.Drawing.Size(163, 21);
             this.cmbEstado.TabIndex = 2;
             this.cmbEstado.Text = "ACTIVO";
+            this.cmbEstado.Validating += new System.ComponentModel.CancelEventHandler(this.cmbEstado_Validating);
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(279, 19);
+            this.label10.Location = new System.Drawing.Point(309, 19);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(44, 13);
             this.label10.TabIndex = 25;
@@ -179,52 +173,13 @@ namespace ControlEntradaSalida
             // 
             this.foto.Text = "Foto";
             // 
-            // buttonNuevo
-            // 
-            this.buttonNuevo.Location = new System.Drawing.Point(176, 177);
-            this.buttonNuevo.Name = "buttonNuevo";
-            this.buttonNuevo.Size = new System.Drawing.Size(113, 23);
-            this.buttonNuevo.TabIndex = 14;
-            this.buttonNuevo.Text = "&Nuevo";
-            this.buttonNuevo.UseVisualStyleBackColor = true;
-            this.buttonNuevo.Click += new System.EventHandler(this.buttonNuevo_Click);
-            // 
-            // buttonEliminar
-            // 
-            this.buttonEliminar.Location = new System.Drawing.Point(414, 177);
-            this.buttonEliminar.Name = "buttonEliminar";
-            this.buttonEliminar.Size = new System.Drawing.Size(113, 23);
-            this.buttonEliminar.TabIndex = 13;
-            this.buttonEliminar.Text = "&Eliminar";
-            this.buttonEliminar.UseVisualStyleBackColor = true;
-            this.buttonEliminar.Click += new System.EventHandler(this.buttonEliminar_Click);
-            // 
-            // buttonAgregar
-            // 
-            this.buttonAgregar.Location = new System.Drawing.Point(295, 177);
-            this.buttonAgregar.Name = "buttonAgregar";
-            this.buttonAgregar.Size = new System.Drawing.Size(113, 23);
-            this.buttonAgregar.TabIndex = 12;
-            this.buttonAgregar.Text = "&Agregar";
-            this.buttonAgregar.UseVisualStyleBackColor = true;
-            this.buttonAgregar.Click += new System.EventHandler(this.buttonAgregar_Click);
-            // 
-            // buttonCapturarFoto
-            // 
-            this.buttonCapturarFoto.Location = new System.Drawing.Point(6, 177);
-            this.buttonCapturarFoto.Name = "buttonCapturarFoto";
-            this.buttonCapturarFoto.Size = new System.Drawing.Size(113, 23);
-            this.buttonCapturarFoto.TabIndex = 11;
-            this.buttonCapturarFoto.Text = "&Capturar foto";
-            this.buttonCapturarFoto.UseVisualStyleBackColor = true;
-            this.buttonCapturarFoto.Click += new System.EventHandler(this.buttonCapturarFoto_Click);
-            // 
             // textBoxApellidos
             // 
             this.textBoxApellidos.Location = new System.Drawing.Point(125, 141);
             this.textBoxApellidos.Name = "textBoxApellidos";
             this.textBoxApellidos.Size = new System.Drawing.Size(450, 20);
             this.textBoxApellidos.TabIndex = 5;
+            this.textBoxApellidos.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxApellidos_Validating);
             // 
             // label3
             // 
@@ -241,6 +196,7 @@ namespace ControlEntradaSalida
             this.textBoxNombres.Name = "textBoxNombres";
             this.textBoxNombres.Size = new System.Drawing.Size(450, 20);
             this.textBoxNombres.TabIndex = 4;
+            this.textBoxNombres.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxNombres_Validating);
             // 
             // label2
             // 
@@ -266,6 +222,67 @@ namespace ControlEntradaSalida
             this.textBoxDocumento.Name = "textBoxDocumento";
             this.textBoxDocumento.Size = new System.Drawing.Size(151, 20);
             this.textBoxDocumento.TabIndex = 1;
+            this.textBoxDocumento.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxDocumento_Validating);
+            // 
+            // buttonFiltrar
+            // 
+            this.buttonFiltrar.Image = global::ControlEntradaSalida.Properties.Resources.Filter_16x;
+            this.buttonFiltrar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonFiltrar.Location = new System.Drawing.Point(533, 177);
+            this.buttonFiltrar.Name = "buttonFiltrar";
+            this.buttonFiltrar.Size = new System.Drawing.Size(113, 23);
+            this.buttonFiltrar.TabIndex = 15;
+            this.buttonFiltrar.Text = "&Filtrar";
+            this.buttonFiltrar.UseVisualStyleBackColor = true;
+            this.buttonFiltrar.Click += new System.EventHandler(this.buttonFiltrar_Click);
+            // 
+            // buttonNuevo
+            // 
+            this.buttonNuevo.Image = global::ControlEntradaSalida.Properties.Resources.NewItem_16x;
+            this.buttonNuevo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonNuevo.Location = new System.Drawing.Point(176, 177);
+            this.buttonNuevo.Name = "buttonNuevo";
+            this.buttonNuevo.Size = new System.Drawing.Size(113, 23);
+            this.buttonNuevo.TabIndex = 14;
+            this.buttonNuevo.Text = "&Nuevo";
+            this.buttonNuevo.UseVisualStyleBackColor = true;
+            this.buttonNuevo.Click += new System.EventHandler(this.buttonNuevo_Click);
+            // 
+            // buttonEliminar
+            // 
+            this.buttonEliminar.Image = global::ControlEntradaSalida.Properties.Resources.DeleteAllRows_16x;
+            this.buttonEliminar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonEliminar.Location = new System.Drawing.Point(414, 177);
+            this.buttonEliminar.Name = "buttonEliminar";
+            this.buttonEliminar.Size = new System.Drawing.Size(113, 23);
+            this.buttonEliminar.TabIndex = 13;
+            this.buttonEliminar.Text = "&Eliminar";
+            this.buttonEliminar.UseVisualStyleBackColor = true;
+            this.buttonEliminar.Click += new System.EventHandler(this.buttonEliminar_Click);
+            // 
+            // buttonAgregar
+            // 
+            this.buttonAgregar.Image = global::ControlEntradaSalida.Properties.Resources.Save_grey_16x;
+            this.buttonAgregar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonAgregar.Location = new System.Drawing.Point(295, 177);
+            this.buttonAgregar.Name = "buttonAgregar";
+            this.buttonAgregar.Size = new System.Drawing.Size(113, 23);
+            this.buttonAgregar.TabIndex = 12;
+            this.buttonAgregar.Text = "&Guardar";
+            this.buttonAgregar.UseVisualStyleBackColor = true;
+            this.buttonAgregar.Click += new System.EventHandler(this.buttonAgregar_Click);
+            // 
+            // buttonCapturarFoto
+            // 
+            this.buttonCapturarFoto.Image = global::ControlEntradaSalida.Properties.Resources.CaptureFrame_16x;
+            this.buttonCapturarFoto.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonCapturarFoto.Location = new System.Drawing.Point(6, 177);
+            this.buttonCapturarFoto.Name = "buttonCapturarFoto";
+            this.buttonCapturarFoto.Size = new System.Drawing.Size(113, 23);
+            this.buttonCapturarFoto.TabIndex = 11;
+            this.buttonCapturarFoto.Text = "&Capturar foto";
+            this.buttonCapturarFoto.UseVisualStyleBackColor = true;
+            this.buttonCapturarFoto.Click += new System.EventHandler(this.buttonCapturarFoto_Click);
             // 
             // pictureBoxUsuario
             // 
@@ -276,6 +293,10 @@ namespace ControlEntradaSalida
             this.pictureBoxUsuario.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxUsuario.TabIndex = 0;
             this.pictureBoxUsuario.TabStop = false;
+            // 
+            // errorProvider
+            // 
+            this.errorProvider.ContainerControl = this;
             // 
             // GestionEmpleados
             // 
@@ -293,6 +314,7 @@ namespace ControlEntradaSalida
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxUsuario)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -323,5 +345,6 @@ namespace ControlEntradaSalida
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox textBoxTarjeta;
         private System.Windows.Forms.Button buttonFiltrar;
+        private System.Windows.Forms.ErrorProvider errorProvider;
     }
 }

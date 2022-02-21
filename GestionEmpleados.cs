@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,6 +22,9 @@ namespace ControlEntradaSalida
         public Int32 m_lSetCardCfgHandle = -1;
         public Int32 m_lDelCardCfgHandle = -1;
         public Int32 m_lGetCardCfgHandle = -1;
+
+
+        private int m_lGetFaceCfgHandle = -1;
 
         private string url_imagen;
         private bool nuevo = false;
@@ -45,6 +49,9 @@ namespace ControlEntradaSalida
                 filePath = Common.datadir + "\\" + dt.ToString("yyyy-MM-dd_HH-mm-ss") + ".jpg"; ;
             } else
             {
+                if (!Directory.Exists(Environment.CurrentDirectory + "\\imagenes\\"))
+                    Directory.CreateDirectory(Environment.CurrentDirectory + "\\imagenes\\");
+
                 filePath = Environment.CurrentDirectory + "\\imagenes\\" + dt.ToString("yyyy-MM-dd_HH-mm-ss") + ".jpg";
             }
 
@@ -702,8 +709,134 @@ namespace ControlEntradaSalida
             }
             return retval;
         }
+
+
+        private void ActualizarItemListView()
+        {
+            if (listView.SelectedItems.Count == 1)
+            {
+                ListViewItem item = this.listView.SelectedItems[0];
+                item.SubItems[1].Text = cmbEstado.Text;
+                item.SubItems[3].Text = this.textBoxNombres.Text;
+                item.SubItems[4].Text = this.textBoxApellidos.Text;
+                item.SubItems[5].Text = "";                
+            }
+        }
+
+        private bool ActualizarInfoUsuarioBD(string documento)
+        {
+            bool retval = false;
+            Common cmn = new Common();
+            string connstr = cmn.obtenerCadenaConexion();
+            BaseDatosMySQL bd = new BaseDatosMySQL();
+            bd.conectarMySQL(connstr);
+            if (bd.conn != null)
+            {
+                string sql = "UPDATE empleados SET nombres = @nombres, " +
+                    "apellidos = @apellidos, estado = @estado, modified = @modified " +
+                    "WHERE documento = @documento";
+                try
+                {
+                    string nombrecompleto = this.textBoxNombres.Text + " " + this.textBoxApellidos.Text;
+                    if (nombrecompleto.Length > 30)
+                        nombrecompleto = nombrecompleto.Substring(0, 29);
+
+                    MySqlCommand cmd = new MySqlCommand(sql, bd.conn);
+                    cmd.Parameters.AddWithValue("@documento", this.textBoxDocumento.Text);
+                    cmd.Parameters.AddWithValue("@nombres", this.textBoxNombres.Text);
+                    cmd.Parameters.AddWithValue("@apellidos", this.textBoxApellidos.Text);                    
+                    cmd.Parameters.AddWithValue("@estado", this.cmbEstado.Text);                    
+                    cmd.Parameters.AddWithValue("@modified", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                    cmd.ExecuteNonQuery();
+                    bd.desconectarMySQL();
+
+                    retval = true;
+                    ActualizarItemListView();
+
+                }
+                catch (MySqlException ex)
+                {
+                    string errstr = ex.Number.ToString() + " " + ex.Message;
+                    MessageBox.Show(errstr, "Error en ActualizarInfoUsuarioBD()", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                }
+            }
+            else
+            {
+                string errstr = bd.errornum + " " + bd.errormsg + "bd = null";
+                MessageBox.Show(errstr, "Error en ActualizarInfoUsuarioBD()", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            return retval;
+        }
+
+        private bool ActualizarInfoUsuarioDispositivo(string documento)
+        {
+            bool retval = false;
+
+            string url = "PUT /ISAPI/AccessControl/UserInfo/Modify?format=json";
+            string UserInfo = "{{ \"UserInfo\" : {{\"employeeNo\": \"{0}\",\"name\": \"{1}\",\"userType\": \"normal\",   \"Valid\" : {{ \"enable\": true,\"beginTime\": \"{2}\",\"endTime\": \"{3}\", \"timeType\": \"local\"}}  }}}}";
+
+            string nombrecompleto = this.textBoxNombres.Text + " " + this.textBoxApellidos.Text;
+            if (nombrecompleto.Length > 30)
+                nombrecompleto = nombrecompleto.Substring(0, 29);
+
+            string fechainicio = "2022-01-01T00:00:00";
+            string fechafinal = "2031-01-01T23:59:00";
+            string UserInfoValues = String.Format(UserInfo, documento, nombrecompleto, fechainicio, fechafinal);
+
+
+            string outputString = null;
+            string outputStatus = null;
+            bool result = false;
+            Common cmn = new Common();
+            result = cmn.ISAPIQuery(url, UserInfoValues, out outputString, out outputStatus);
+            string xmlresult = "";
+            dynamic DynamicData;
+            if (!result)
+            {
+                try
+                {
+                    xmlresult = outputStatus;
+                    DynamicData = JsonConvert.DeserializeObject(xmlresult);
+                    string statusCode = DynamicData.statusCode;
+                    string statusString = DynamicData.statusString;
+                    string subStatusCode = DynamicData.subStatusCode;
+                    string errorCode = DynamicData.errorCode;
+                    string errorMsg = DynamicData.errorMsg;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error en ActualizarInfoUsuarioDispositivo()", ex.Message.ToString());
+                }
+
+            }
+            else
+            {
+                try
+                {
+                    xmlresult = outputString;
+                    DynamicData = JsonConvert.DeserializeObject(xmlresult);
+                    string statusCode = DynamicData.statusCode;
+                    string statusString = DynamicData.statusString;
+                    string subStatusCode = DynamicData.subStatusCode;
+
+                    if (statusCode == "1" && statusString == "OK" && subStatusCode == "ok")
+                        retval = true;
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error en ActualizarInfoUsuarioDispositivo()", ex.Message.ToString());
+                }
+            }
+            return retval;
+        }
         private void buttonAgregar_Click(object sender, EventArgs e)
         {
+
+            if (!ValidarDocumento() || !ValidarEstado() || !ValidarNombres() || !ValidarApellidos())
+                return;
+
             string msg;
             bool retval;
             Common cmn = new Common();
@@ -712,24 +845,56 @@ namespace ControlEntradaSalida
             {
                 bool resultcrear = false;
                 bool resultenviar = false;
+                string nombrecompleto = this.textBoxNombres.Text + " " + this.textBoxApellidos.Text;
+                if (nombrecompleto.Length > 30)
+                    nombrecompleto = nombrecompleto.Substring(0, 29);
 
-                resultcrear = CrearUsuarioSDK(this.textBoxDocumento.Text, "1", this.textBoxDocumento.Text, this.textBoxNombres.Text + " " + this.textBoxApellidos.Text);
-                resultenviar = EnviarImagen("1", this.textBoxDocumento.Text);
-
-                if (resultcrear && resultenviar)
-                {
-                    InsertarUsuario();                                        
-                    AgregarUsuarioListView();
-                    LimpiarControles(false);
-                    url_imagen = null;
-                }
                 
+
+                if (nuevo)
+                {
+                    resultcrear = CrearUsuarioSDK(this.textBoxDocumento.Text, "1", this.textBoxDocumento.Text, nombrecompleto);
+
+                    if (this.pictureBoxUsuario.Image != null)
+                        resultenviar = EnviarImagen("1", this.textBoxDocumento.Text);
+                    else
+                        resultenviar = true;
+
+                    if (resultcrear && resultenviar)
+                    {
+                        InsertarUsuario();
+                        AgregarUsuarioListView();
+                        LimpiarControles(false);
+                        url_imagen = null;
+                    }
+                }
+                if (!nuevo)
+                {
+                    bool resultactbd = false; ;
+                    bool resultactdispo = ActualizarInfoUsuarioDispositivo(this.textBoxDocumento.Text);
+
+                    if (this.pictureBoxUsuario.Image != null)
+                        resultenviar = EnviarImagen("1", this.textBoxDocumento.Text);
+                    else
+                        resultenviar = true;
+
+                    if (resultactdispo && resultenviar)
+                        resultactbd = ActualizarInfoUsuarioBD(this.textBoxDocumento.Text);
+
+                    if (!resultactdispo || !resultenviar)
+                        MessageBox.Show("No se pudo actualizar el usuario (información y/o foto) en el dispositivo", "Error de actualizacion", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    if (!resultactbd)
+                        MessageBox.Show("No se pudo actualizar el usuario en la base de datos local", "Error de actualizacion", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LimpiarControles(false);
+                }
             }
             cmn = null;
         }
 
         private void GestionUsuarios_Load(object sender, EventArgs e)
         {
+            LimpiarControles(true);
             CargarDatosTablaEmpleados();
         }
 
@@ -750,6 +915,7 @@ namespace ControlEntradaSalida
         private void LimpiarControles(bool todos)
         {
             this.cmbEstado.Text = this.cmbEstado.Items[0].ToString();
+            this.textBoxDocumento.Enabled = true;
             this.textBoxDocumento.Text = "";            
             this.textBoxNombres.Text = "";
             this.textBoxApellidos.Text = "";
@@ -798,11 +964,11 @@ namespace ControlEntradaSalida
                             result = EliminarUsuario(documento);
                             if (result)
                             {
-                                result = EliminarImagen(item.SubItems[5].Text);
+                                /*result = EliminarImagen(item.SubItems[5].Text);
                                 if (!result)
                                 {
                                     MessageBox.Show("No se pudo eliminar la imagen del usuario: " + url_imagen + " por favor revise.", "Eliminar usuario", MessageBoxButtons.OK);
-                                }
+                                }*/
                             }
                             else
                             {
@@ -819,21 +985,153 @@ namespace ControlEntradaSalida
                 
         }
 
+        private bool BuscarImagenUsuario(string documento)
+        {
+            bool retval = false;
+            if (m_lGetFaceCfgHandle != -1)
+            {
+                HCNetSDK_Facial.NET_DVR_StopRemoteConfig(m_lGetFaceCfgHandle);
+                m_lGetFaceCfgHandle = -1;
+            }
+
+            if (this.pictureBoxUsuario.Image != null)
+            {
+                pictureBoxUsuario.Image.Dispose();
+                pictureBoxUsuario.Image = null;
+            }
+
+            HCNetSDK_Facial.NET_DVR_FACE_COND struCond = new HCNetSDK_Facial.NET_DVR_FACE_COND();
+            struCond.init();
+            struCond.dwSize = Marshal.SizeOf(struCond);
+            int dwSize = struCond.dwSize;
+            struCond.dwEnableReaderNo = 1;
+            struCond.dwFaceNum = 1;// The numbre of faces is 1
+            byte[] byTemp = System.Text.Encoding.UTF8.GetBytes(documento);
+            for (int i = 0; i < byTemp.Length; i++)
+            {
+                struCond.byCardNo[i] = byTemp[i];
+            }
+
+            IntPtr ptrStruCond = Marshal.AllocHGlobal(dwSize);
+            Marshal.StructureToPtr(struCond, ptrStruCond, false);
+
+            m_lGetFaceCfgHandle = HCNetSDK_Facial.NET_DVR_StartRemoteConfig(Common.m_UserID, HCNetSDK_Facial.NET_DVR_GET_FACE, ptrStruCond, dwSize, null, IntPtr.Zero);
+            if (m_lGetFaceCfgHandle == -1)
+            {
+                Marshal.FreeHGlobal(ptrStruCond);
+                MessageBox.Show("NET_DVR_GET_FACE_FAIL, ERROR CODE" + HCNetSDK_Facial.NET_DVR_GetLastError().ToString(), "Error", MessageBoxButtons.OK);
+                return false;
+            }
+
+            bool Flag = true;
+            int dwStatus = 0;
+
+            HCNetSDK_Facial.NET_DVR_FACE_RECORD struRecord = new HCNetSDK_Facial.NET_DVR_FACE_RECORD();
+            struRecord.init();
+            struRecord.dwSize = Marshal.SizeOf(struRecord);
+            int dwOutBuffSize = struRecord.dwSize;
+            while (Flag)
+            {
+                dwStatus = HCNetSDK_Facial.NET_DVR_GetNextRemoteConfig(m_lGetFaceCfgHandle, ref struRecord, dwOutBuffSize);
+                switch (dwStatus)
+                {
+                    case HCNetSDK_Facial.NET_SDK_GET_NEXT_STATUS_SUCCESS://The data is successfully read. After processing this data, you need to call next
+                        ProcessFaceDataFromDevice(ref struRecord, ref Flag);
+                        if (Flag)
+                            retval = true;
+                        break;
+                    case HCNetSDK_Facial.NET_SDK_GET_NEXT_STATUS_NEED_WAIT:
+                        break;
+                    case HCNetSDK_Facial.NET_SDK_GET_NEXT_STATUS_FAILED:
+                        HCNetSDK_Facial.NET_DVR_StopRemoteConfig(m_lGetFaceCfgHandle);
+                        //MessageBox.Show("NET_SDK_GET_NEXT_STATUS_FAILED" + HCNetSDK_Facial.NET_DVR_GetLastError().ToString(), "Error", MessageBoxButtons.OK);
+                        Flag = false;
+                        break;
+                    case HCNetSDK_Facial.NET_SDK_GET_NEXT_STATUS_FINISH:
+                        // MessageBox.Show("NET_SDK_GET_NEXT_STATUS_FINISH", "Tips", MessageBoxButtons.OK);
+                        HCNetSDK_Facial.NET_DVR_StopRemoteConfig(m_lGetFaceCfgHandle);
+                        Flag = false;
+                        break;
+                    default:
+                        //MessageBox.Show("NET_SDK_GET_STATUS_UNKOWN" + HCNetSDK_Facial.NET_DVR_GetLastError().ToString(), "Error", MessageBoxButtons.OK);
+                        Flag = false;
+                        HCNetSDK_Facial.NET_DVR_StopRemoteConfig(m_lGetFaceCfgHandle);
+                        break;
+                }
+            }
+
+            Marshal.FreeHGlobal(ptrStruCond);
+            return retval;
+        }
+
+        private void ProcessFaceDataFromDevice(ref HCNetSDK_Facial.NET_DVR_FACE_RECORD struRecord, ref Boolean Flag)
+        {
+            string strpath = null;
+            DateTime dt = DateTime.Now;
+            string filePathName = null;
+            if (Common.datadir != null)
+            {
+                filePathName = Common.datadir + "\\" + dt.ToString(this.textBoxDocumento.Text + "_yyyy-MM-dd_HH-mm-ss") + ".jpg"; ;
+            }
+            else
+            {
+                if (!Directory.Exists(Environment.CurrentDirectory + "\\imagenes\\"))
+                    Directory.CreateDirectory(Environment.CurrentDirectory + "\\imagenes\\");
+
+                filePathName = Environment.CurrentDirectory + "\\imagenes\\" + dt.ToString(this.textBoxDocumento.Text + "_yyyy-MM-dd_HH-mm-ss") + ".jpg";
+            }
+
+            strpath = filePathName;
+
+            if (0 == struRecord.dwFaceLen)
+            {
+                return;
+            }
+
+            if (pictureBoxUsuario.Image != null)
+            {
+                pictureBoxUsuario.Image.Dispose();
+                pictureBoxUsuario.Image = null;
+            }
+
+            try
+            {
+                using (FileStream fs = new FileStream(strpath, FileMode.OpenOrCreate))
+                {
+                    int FaceLen = struRecord.dwFaceLen;
+                    byte[] by = new byte[FaceLen];
+                    Marshal.Copy(struRecord.pFaceBuffer, by, 0, FaceLen);
+                    fs.Write(by, 0, FaceLen);
+                    fs.Close();
+                }
+                pictureBoxUsuario.Image = Image.FromFile(strpath);
+                this.url_imagen = filePathName;
+            }
+            catch
+            {
+                Flag = false;
+                HCNetSDK_Facial.NET_DVR_StopRemoteConfig(m_lGetFaceCfgHandle);
+                MessageBox.Show("ProcessFaceData failed", "Error", MessageBoxButtons.OK);
+            }
+        }
+
         private void listView_Click(object sender, EventArgs e)
         {
             if  (listView.SelectedItems.Count > 0)                
             {
                 nuevo = false;
-                this.buttonCapturarFoto.Enabled = false;
+                //this.buttonCapturarFoto.Enabled = false;
                 ListViewItem item = listView.SelectedItems[0];
                 this.textBoxDocumento.Text = item.SubItems[0].Text;
                 this.cmbEstado.Text = item.SubItems[1].Text;
                 this.textBoxTarjeta.Text = item.SubItems[2].Text;
                 this.textBoxNombres.Text = item.SubItems[3].Text;
                 this.textBoxApellidos.Text = item.SubItems[4].Text;
-                this.pictureBoxUsuario.ImageLocation = item.SubItems[5].Text;
-                this.url_imagen = item.SubItems[5].Text;
-                this.buttonAgregar.Enabled = false;
+                this.textBoxDocumento.Enabled = false;
+                //this.pictureBoxUsuario.ImageLocation = item.SubItems[5].Text;
+                //this.url_imagen = item.SubItems[5].Text;
+                BuscarImagenUsuario(this.textBoxDocumento.Text);
+                
             }
         }
 
@@ -868,12 +1166,15 @@ namespace ControlEntradaSalida
                 {
                     MySqlCommand cmd = new MySqlCommand(sql, bd.conn);
                     MySqlDataReader rdr = cmd.ExecuteReader();
+
                     if (rdr.HasRows)
                     {
+                        if (this.listView.Items.Count > 0)
+                            this.listView.Items.Clear();
+
                         while (rdr.Read())
                         {
-                            if (this.listView.Items.Count > 0)
-                                this.listView.Items.Clear();
+                            
                             ListViewItem lvi = new ListViewItem(rdr["documento"].ToString());
                             lvi.SubItems.Add(rdr["estado"].ToString());
                             lvi.SubItems.Add(rdr["numtarjeta"].ToString());
@@ -911,6 +1212,134 @@ namespace ControlEntradaSalida
             LimpiarControles(true);
         }
 
+        private bool ValidarOpcionCombo(ComboBox cmb)
+        {
 
+            string textocombo = cmb.Text;
+
+            ComboBox.ObjectCollection items = cmb.Items;
+            bool encontrado = false;
+
+            if (items.Count > 0)
+            {
+                for (int i = 0; i < items.Count; i++)
+                {
+                    if (items[i].ToString() == textocombo)
+                    {
+                        encontrado = true;
+                        break;
+                    }
+
+                }
+            }
+            return encontrado;
+
+        }
+
+        private bool ValidarEstado()
+        {
+            bool retval = false;
+            if (string.IsNullOrEmpty(this.cmbEstado.Text))
+            {
+                errorProvider.SetError(this.cmbEstado, "No puede estar en blanco");
+            }
+            else
+            {
+                bool encontrado = ValidarOpcionCombo(this.cmbEstado);
+
+                if (!encontrado)
+                    errorProvider.SetError(this.cmbEstado, "Opción no válida para este campo");
+                else
+                {
+                    errorProvider.SetError(this.cmbEstado, "");
+                    retval = true;
+                }
+            }
+            return retval;
+        }
+
+
+        private bool ValidarDocumento()
+        {
+            bool retval = false;
+
+            try
+            {
+                if (string.IsNullOrEmpty(this.textBoxDocumento.Text) || this.textBoxDocumento.Text.Trim().Length == 0) 
+                {
+                    errorProvider.SetError(this.textBoxDocumento, "No puede estar en blanco");
+                }
+                else
+                {
+                    int valtemp = int.Parse(this.textBoxDocumento.Text);
+                    if (valtemp <= 0)
+                        errorProvider.SetError(this.textBoxDocumento, "Valor no permitido");
+                    else
+                    {
+                        errorProvider.SetError(this.textBoxDocumento, "");
+                        retval = true;
+                    }
+                }
+            }
+            catch
+            {
+                errorProvider.SetError(this.textBoxDocumento, "Debe ser un número");
+            }
+
+            return retval;
+
+        }
+
+
+        private void textBoxDocumento_Validating(object sender, CancelEventArgs e)
+        {
+            ValidarDocumento();
+        }
+
+        private void cmbEstado_Validating(object sender, CancelEventArgs e)
+        {
+            ValidarEstado();
+        }
+
+
+        private bool ValidarNombres()
+        {
+            bool retval = false;
+            if (string.IsNullOrEmpty(this.textBoxNombres.Text))
+                errorProvider.SetError(this.textBoxNombres, "No puede estar en blanco");
+            else
+            {
+                errorProvider.SetError(this.textBoxNombres, "");
+                retval = true;
+            }
+
+
+            return retval;
+        }
+
+        private bool ValidarApellidos()
+        {
+            bool retval = false;
+            if (string.IsNullOrEmpty(this.textBoxApellidos.Text))
+                errorProvider.SetError(this.textBoxApellidos, "No puede estar en blanco");
+            else
+            {
+                errorProvider.SetError(this.textBoxApellidos, "");
+                retval = true;
+            }
+
+
+            return retval;
+        }
+
+        private void textBoxNombres_Validating(object sender, CancelEventArgs e)
+        {
+            ValidarNombres();
+        }
+
+        private void textBoxApellidos_Validating(object sender, CancelEventArgs e)
+        {
+            ValidarApellidos();
+        }
     }
 }
