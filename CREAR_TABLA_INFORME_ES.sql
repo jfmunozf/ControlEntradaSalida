@@ -7,8 +7,8 @@ BEGIN
     DECLARE varhora TIME;
     DECLARE varfinal INTEGER DEFAULT 0;   
     DECLARE updated BOOLEAN;
-    DECLARE lastid INTEGER;
-    DECLARE mydata CURSOR FOR SELECT fecha, hora, documento FROM entradas_salidas ORDER BY fecha, hora ASC;
+    DECLARE lastid INTEGER;    
+    DECLARE mydata CURSOR FOR SELECT fecha, hora, documento FROM entradas_salidas ORDER BY documento, fecha, hora ASC;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET varfinal = 1;
     DROP TABLE IF EXISTS temp_informe_es;
     CREATE TABLE temp_informe_es (id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, fecha DATE NOT NULL, hora_a TIME, hora_b TIME, documento VARCHAR(255) NOT NULL);

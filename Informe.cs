@@ -14,7 +14,10 @@ namespace ControlEntradaSalida
 {
     public partial class Informe : Form
     {
-        public object lista = null;
+        public object listads = null;
+        public string nombredatasource = null;
+        public string embeddedresource = null;
+
         public Informe()
         {
             InitializeComponent();
@@ -22,10 +25,12 @@ namespace ControlEntradaSalida
 
         private void Informe_Load(object sender, EventArgs e)
         {
-            
 
-            ReportDataSource rds = new ReportDataSource("InformeEventos", lista);
-            this.reportViewer1.LocalReport.ReportEmbeddedResource = "ControlEntradaSalida.InformeEventos.rdlc";
+
+            //ReportDataSource rds = new ReportDataSource("InformeEventos", listads);
+            ReportDataSource rds = new ReportDataSource(this.nombredatasource, listads);
+            //this.reportViewer1.LocalReport.ReportEmbeddedResource = "ControlEntradaSalida.InformeEventos.rdlc";
+            this.reportViewer1.LocalReport.ReportEmbeddedResource = this.embeddedresource;
             this.reportViewer1.LocalReport.DataSources.Clear();
             this.reportViewer1.LocalReport.DataSources.Add(rds);
             this.reportViewer1.Width = this.Width - 5;

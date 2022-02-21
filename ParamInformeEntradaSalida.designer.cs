@@ -1,7 +1,7 @@
 ﻿
 namespace ControlEntradaSalida
 {
-    partial class ParamInformeEventos
+    partial class ParamInformeEntradaSalida
     {
         /// <summary>
         /// Required designer variable.
@@ -60,7 +60,8 @@ namespace ControlEntradaSalida
             this.nombres = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.apellidos = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.fecha = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.hora = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.horaa = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.horab = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -332,7 +333,8 @@ namespace ControlEntradaSalida
             this.nombres,
             this.apellidos,
             this.fecha,
-            this.hora});
+            this.horaa,
+            this.horab});
             this.listView.HideSelection = false;
             this.listView.Location = new System.Drawing.Point(12, 256);
             this.listView.Name = "listView";
@@ -362,13 +364,17 @@ namespace ControlEntradaSalida
             // 
             // fecha
             // 
-            this.fecha.Text = "fecha";
+            this.fecha.Text = "Fecha";
             // 
-            // hora
+            // horaa
             // 
-            this.hora.Text = "hora";
+            this.horaa.Text = "Hora 1";
             // 
-            // ParamInformeEventos
+            // horab
+            // 
+            this.horab.Text = "Hora 2";
+            // 
+            // ParamInformeEntradaSalida
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -378,7 +384,7 @@ namespace ControlEntradaSalida
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "ParamInformeEventos";
+            this.Name = "ParamInformeEntradaSalida";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Parámetros informe de consumos";
             this.Load += new System.EventHandler(this.ParamInformeConsumos_Load);
@@ -426,8 +432,9 @@ namespace ControlEntradaSalida
         private System.Windows.Forms.TextBox textBoxNombreEmpleado;
         private System.Windows.Forms.ColumnHeader num;
         private System.Windows.Forms.ColumnHeader fecha;
-        private System.Windows.Forms.ColumnHeader hora;
+        private System.Windows.Forms.ColumnHeader horaa;
         private System.Windows.Forms.TextBox textBoxApellidosEmpleado;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ColumnHeader horab;
     }
 }

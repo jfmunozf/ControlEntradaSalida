@@ -894,6 +894,13 @@ namespace ControlEntradaSalida
 
         private void GestionUsuarios_Load(object sender, EventArgs e)
         {
+            if (Common.m_UserID < 0)
+            {
+                MessageBox.Show("Debe iniciar sesión en el dispositivo", "Error de inicio de sesión", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.groupBox.Enabled = false;
+                return;
+            }
+            this.groupBox.Enabled = true;
             LimpiarControles(true);
             CargarDatosTablaEmpleados();
         }

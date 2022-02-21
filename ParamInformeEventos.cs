@@ -54,7 +54,7 @@ namespace ControlEntradaSalida
             {
                 retval += String.Format("AND empleados.apellidos LIKE '%{0}%' ", this.textBoxApellidosEmpleado.Text);
             }
-            retval += "ORDER BY fecha, hora DESC";
+            retval += "ORDER BY documento, fecha, hora ASC";
 
             return retval;
         }
@@ -126,12 +126,14 @@ namespace ControlEntradaSalida
             string result = ObtenerExpresionQuery().Trim();
             if (this.listView.Items.Count > 0)
                 this.listView.Items.Clear();
-            List<InformeEventos> lieventos= null;
-            bool res = GenerarConsulta(result, out lieventos);
-            if (res && lieventos != null)
+            List<InformeEventos> objinf = null;
+            bool res = GenerarConsulta(result, out objinf);
+            if (res && objinf != null)
             {
-                Informe frmInforme = new Informe();                
-                frmInforme.lista = lieventos;                
+                Informe frmInforme = new Informe();
+                frmInforme.listads = objinf;
+                frmInforme.embeddedresource = "ControlEntradaSalida.InformeEventos.rdlc";
+                frmInforme.nombredatasource = "InformeEventos";                
                 frmInforme.Show();
             }
         }

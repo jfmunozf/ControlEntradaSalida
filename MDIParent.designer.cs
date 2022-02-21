@@ -35,11 +35,12 @@ namespace ControlEntradaSalida
             this.gestionDeEmpleadosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CapturarEntradaSalidaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.consultarDatosDispositivoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.salirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.informesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eventosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.consultarDatosDispositivoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+            this.entradasYSalidasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -71,50 +72,28 @@ namespace ControlEntradaSalida
             // gestiónDeDispositivosToolStripMenuItem
             // 
             this.gestiónDeDispositivosToolStripMenuItem.Name = "gestiónDeDispositivosToolStripMenuItem";
-            this.gestiónDeDispositivosToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
+            this.gestiónDeDispositivosToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
             this.gestiónDeDispositivosToolStripMenuItem.Text = "G&estión de dispositivos";
             this.gestiónDeDispositivosToolStripMenuItem.Click += new System.EventHandler(this.gestiónDeDispositivosToolStripMenuItem_Click);
             // 
             // gestionDeEmpleadosToolStripMenuItem
             // 
             this.gestionDeEmpleadosToolStripMenuItem.Name = "gestionDeEmpleadosToolStripMenuItem";
-            this.gestionDeEmpleadosToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
+            this.gestionDeEmpleadosToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
             this.gestionDeEmpleadosToolStripMenuItem.Text = "&Ge&stión de empleados";
             this.gestionDeEmpleadosToolStripMenuItem.Click += new System.EventHandler(this.gestionDeEmpleadosToolStripMenuItem_Click);
             // 
             // CapturarEntradaSalidaToolStripMenuItem
             // 
             this.CapturarEntradaSalidaToolStripMenuItem.Name = "CapturarEntradaSalidaToolStripMenuItem";
-            this.CapturarEntradaSalidaToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
+            this.CapturarEntradaSalidaToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
             this.CapturarEntradaSalidaToolStripMenuItem.Text = "&Capturar entrada y salida";
             this.CapturarEntradaSalidaToolStripMenuItem.Click += new System.EventHandler(this.CapturarEntradaSalidaToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(245, 6);
-            // 
-            // salirToolStripMenuItem
-            // 
-            this.salirToolStripMenuItem.Name = "salirToolStripMenuItem";
-            this.salirToolStripMenuItem.Size = new System.Drawing.Size(248, 22);
-            this.salirToolStripMenuItem.Text = "&Salir";
-            this.salirToolStripMenuItem.Click += new System.EventHandler(this.salirToolStripMenuItem_Click);
-            // 
-            // informesToolStripMenuItem
-            // 
-            this.informesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.eventosToolStripMenuItem});
-            this.informesToolStripMenuItem.Name = "informesToolStripMenuItem";
-            this.informesToolStripMenuItem.Size = new System.Drawing.Size(66, 20);
-            this.informesToolStripMenuItem.Text = "&Informes";
-            // 
-            // eventosToolStripMenuItem
-            // 
-            this.eventosToolStripMenuItem.Name = "eventosToolStripMenuItem";
-            this.eventosToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
-            this.eventosToolStripMenuItem.Text = "&Eventos";
-            this.eventosToolStripMenuItem.Click += new System.EventHandler(this.eventosToolStripMenuItem_Click);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(250, 6);
             // 
             // consultarDatosDispositivoToolStripMenuItem
             // 
@@ -126,7 +105,37 @@ namespace ControlEntradaSalida
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(245, 6);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(250, 6);
+            // 
+            // salirToolStripMenuItem
+            // 
+            this.salirToolStripMenuItem.Name = "salirToolStripMenuItem";
+            this.salirToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.salirToolStripMenuItem.Text = "&Salir";
+            this.salirToolStripMenuItem.Click += new System.EventHandler(this.salirToolStripMenuItem_Click);
+            // 
+            // informesToolStripMenuItem
+            // 
+            this.informesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.entradasYSalidasToolStripMenuItem,
+            this.eventosToolStripMenuItem});
+            this.informesToolStripMenuItem.Name = "informesToolStripMenuItem";
+            this.informesToolStripMenuItem.Size = new System.Drawing.Size(66, 20);
+            this.informesToolStripMenuItem.Text = "&Informes";
+            // 
+            // eventosToolStripMenuItem
+            // 
+            this.eventosToolStripMenuItem.Name = "eventosToolStripMenuItem";
+            this.eventosToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.eventosToolStripMenuItem.Text = "&Registro de eventos";
+            this.eventosToolStripMenuItem.Click += new System.EventHandler(this.eventosToolStripMenuItem_Click);
+            // 
+            // entradasYSalidasToolStripMenuItem
+            // 
+            this.entradasYSalidasToolStripMenuItem.Name = "entradasYSalidasToolStripMenuItem";
+            this.entradasYSalidasToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.entradasYSalidasToolStripMenuItem.Text = "&Entradas y salidas";
+            this.entradasYSalidasToolStripMenuItem.Click += new System.EventHandler(this.entradasYSalidasToolStripMenuItem_Click);
             // 
             // MDIParent
             // 
@@ -163,6 +172,7 @@ namespace ControlEntradaSalida
         private System.Windows.Forms.ToolStripMenuItem eventosToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem consultarDatosDispositivoToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem entradasYSalidasToolStripMenuItem;
     }
 }
 

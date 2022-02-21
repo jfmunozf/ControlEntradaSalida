@@ -78,7 +78,7 @@ namespace ControlEntradaSalida
         {
             if (Common.m_UserID < 0)
             {
-                MessageBox.Show("Primero inicie sesión en el dispositivo bimétrico", "Inicio de sesión en dispositivo biométrico", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Primero inicie sesión en el dispositivo biométrico", "Inicio de sesión en dispositivo biométrico", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 

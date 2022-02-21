@@ -30,7 +30,8 @@ namespace ControlEntradaSalida
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox = new System.Windows.Forms.GroupBox();
+            this.buttonFiltrar = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.textBoxTarjeta = new System.Windows.Forms.TextBox();
             this.cmbEstado = new System.Windows.Forms.ComboBox();
@@ -42,48 +43,59 @@ namespace ControlEntradaSalida
             this.nombres = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.apellidos = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.foto = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.buttonNuevo = new System.Windows.Forms.Button();
+            this.buttonEliminar = new System.Windows.Forms.Button();
+            this.buttonAgregar = new System.Windows.Forms.Button();
             this.textBoxApellidos = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.textBoxNombres = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.textBoxDocumento = new System.Windows.Forms.TextBox();
-            this.buttonFiltrar = new System.Windows.Forms.Button();
-            this.buttonNuevo = new System.Windows.Forms.Button();
-            this.buttonEliminar = new System.Windows.Forms.Button();
-            this.buttonAgregar = new System.Windows.Forms.Button();
+            this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.buttonCapturarFoto = new System.Windows.Forms.Button();
             this.pictureBoxUsuario = new System.Windows.Forms.PictureBox();
-            this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
-            this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxUsuario)).BeginInit();
+            this.groupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxUsuario)).BeginInit();
             this.SuspendLayout();
             // 
-            // groupBox1
+            // groupBox
             // 
-            this.groupBox1.Controls.Add(this.buttonFiltrar);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.textBoxTarjeta);
-            this.groupBox1.Controls.Add(this.cmbEstado);
-            this.groupBox1.Controls.Add(this.label10);
-            this.groupBox1.Controls.Add(this.listView);
-            this.groupBox1.Controls.Add(this.buttonNuevo);
-            this.groupBox1.Controls.Add(this.buttonEliminar);
-            this.groupBox1.Controls.Add(this.buttonAgregar);
-            this.groupBox1.Controls.Add(this.buttonCapturarFoto);
-            this.groupBox1.Controls.Add(this.textBoxApellidos);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.textBoxNombres);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.textBoxDocumento);
-            this.groupBox1.Controls.Add(this.pictureBoxUsuario);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(741, 426);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
+            this.groupBox.Controls.Add(this.buttonFiltrar);
+            this.groupBox.Controls.Add(this.label6);
+            this.groupBox.Controls.Add(this.textBoxTarjeta);
+            this.groupBox.Controls.Add(this.cmbEstado);
+            this.groupBox.Controls.Add(this.label10);
+            this.groupBox.Controls.Add(this.listView);
+            this.groupBox.Controls.Add(this.buttonNuevo);
+            this.groupBox.Controls.Add(this.buttonEliminar);
+            this.groupBox.Controls.Add(this.buttonAgregar);
+            this.groupBox.Controls.Add(this.buttonCapturarFoto);
+            this.groupBox.Controls.Add(this.textBoxApellidos);
+            this.groupBox.Controls.Add(this.label3);
+            this.groupBox.Controls.Add(this.textBoxNombres);
+            this.groupBox.Controls.Add(this.label2);
+            this.groupBox.Controls.Add(this.label1);
+            this.groupBox.Controls.Add(this.textBoxDocumento);
+            this.groupBox.Controls.Add(this.pictureBoxUsuario);
+            this.groupBox.Location = new System.Drawing.Point(12, 12);
+            this.groupBox.Name = "groupBox";
+            this.groupBox.Size = new System.Drawing.Size(741, 426);
+            this.groupBox.TabIndex = 0;
+            this.groupBox.TabStop = false;
+            // 
+            // buttonFiltrar
+            // 
+            this.buttonFiltrar.Image = global::ControlEntradaSalida.Properties.Resources.Filter_16x;
+            this.buttonFiltrar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonFiltrar.Location = new System.Drawing.Point(533, 177);
+            this.buttonFiltrar.Name = "buttonFiltrar";
+            this.buttonFiltrar.Size = new System.Drawing.Size(113, 23);
+            this.buttonFiltrar.TabIndex = 15;
+            this.buttonFiltrar.Text = "&Filtrar";
+            this.buttonFiltrar.UseVisualStyleBackColor = true;
+            this.buttonFiltrar.Click += new System.EventHandler(this.buttonFiltrar_Click);
             // 
             // label6
             // 
@@ -173,69 +185,6 @@ namespace ControlEntradaSalida
             // 
             this.foto.Text = "Foto";
             // 
-            // textBoxApellidos
-            // 
-            this.textBoxApellidos.Location = new System.Drawing.Point(125, 141);
-            this.textBoxApellidos.Name = "textBoxApellidos";
-            this.textBoxApellidos.Size = new System.Drawing.Size(450, 20);
-            this.textBoxApellidos.TabIndex = 5;
-            this.textBoxApellidos.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxApellidos_Validating);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(125, 125);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(53, 13);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "&Apellidos*";
-            // 
-            // textBoxNombres
-            // 
-            this.textBoxNombres.Location = new System.Drawing.Point(125, 86);
-            this.textBoxNombres.Name = "textBoxNombres";
-            this.textBoxNombres.Size = new System.Drawing.Size(450, 20);
-            this.textBoxNombres.TabIndex = 4;
-            this.textBoxNombres.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxNombres_Validating);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(122, 70);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(53, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "&Nombres*";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(122, 19);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(66, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "&Documento*";
-            // 
-            // textBoxDocumento
-            // 
-            this.textBoxDocumento.Location = new System.Drawing.Point(125, 35);
-            this.textBoxDocumento.Name = "textBoxDocumento";
-            this.textBoxDocumento.Size = new System.Drawing.Size(151, 20);
-            this.textBoxDocumento.TabIndex = 1;
-            this.textBoxDocumento.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxDocumento_Validating);
-            // 
-            // buttonFiltrar
-            // 
-            this.buttonFiltrar.Image = global::ControlEntradaSalida.Properties.Resources.Filter_16x;
-            this.buttonFiltrar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.buttonFiltrar.Location = new System.Drawing.Point(533, 177);
-            this.buttonFiltrar.Name = "buttonFiltrar";
-            this.buttonFiltrar.Size = new System.Drawing.Size(113, 23);
-            this.buttonFiltrar.TabIndex = 15;
-            this.buttonFiltrar.Text = "&Filtrar";
-            this.buttonFiltrar.UseVisualStyleBackColor = true;
-            this.buttonFiltrar.Click += new System.EventHandler(this.buttonFiltrar_Click);
-            // 
             // buttonNuevo
             // 
             this.buttonNuevo.Image = global::ControlEntradaSalida.Properties.Resources.NewItem_16x;
@@ -272,6 +221,64 @@ namespace ControlEntradaSalida
             this.buttonAgregar.UseVisualStyleBackColor = true;
             this.buttonAgregar.Click += new System.EventHandler(this.buttonAgregar_Click);
             // 
+            // textBoxApellidos
+            // 
+            this.textBoxApellidos.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.textBoxApellidos.Location = new System.Drawing.Point(125, 141);
+            this.textBoxApellidos.Name = "textBoxApellidos";
+            this.textBoxApellidos.Size = new System.Drawing.Size(450, 20);
+            this.textBoxApellidos.TabIndex = 5;
+            this.textBoxApellidos.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxApellidos_Validating);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(125, 125);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(53, 13);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "&Apellidos*";
+            // 
+            // textBoxNombres
+            // 
+            this.textBoxNombres.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.textBoxNombres.Location = new System.Drawing.Point(125, 86);
+            this.textBoxNombres.Name = "textBoxNombres";
+            this.textBoxNombres.Size = new System.Drawing.Size(450, 20);
+            this.textBoxNombres.TabIndex = 4;
+            this.textBoxNombres.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxNombres_Validating);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(122, 70);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(53, 13);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "&Nombres*";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(122, 19);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(66, 13);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "&Documento*";
+            // 
+            // textBoxDocumento
+            // 
+            this.textBoxDocumento.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.textBoxDocumento.Location = new System.Drawing.Point(125, 35);
+            this.textBoxDocumento.Name = "textBoxDocumento";
+            this.textBoxDocumento.Size = new System.Drawing.Size(151, 20);
+            this.textBoxDocumento.TabIndex = 1;
+            this.textBoxDocumento.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxDocumento_Validating);
+            // 
+            // errorProvider
+            // 
+            this.errorProvider.ContainerControl = this;
+            // 
             // buttonCapturarFoto
             // 
             this.buttonCapturarFoto.Image = global::ControlEntradaSalida.Properties.Resources.CaptureFrame_16x;
@@ -294,16 +301,12 @@ namespace ControlEntradaSalida
             this.pictureBoxUsuario.TabIndex = 0;
             this.pictureBoxUsuario.TabStop = false;
             // 
-            // errorProvider
-            // 
-            this.errorProvider.ContainerControl = this;
-            // 
             // GestionEmpleados
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(764, 450);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.groupBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -311,17 +314,17 @@ namespace ControlEntradaSalida
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Gestion de empleados";
             this.Load += new System.EventHandler(this.GestionUsuarios_Load);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxUsuario)).EndInit();
+            this.groupBox.ResumeLayout(false);
+            this.groupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxUsuario)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBoxDocumento;

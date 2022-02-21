@@ -76,5 +76,12 @@ namespace ControlEntradaSalida
             frmGestionUsuariosDispositivo.Show();
 
         }
+
+        private void entradasYSalidasToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ParamInformeEntradaSalida frmParamInformeEntradaSalida = new ParamInformeEntradaSalida();
+            frmParamInformeEntradaSalida.MdiParent = this;
+            frmParamInformeEntradaSalida.Show();
+        }
     }
 }

@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 
 namespace ControlEntradaSalida
@@ -68,6 +69,152 @@ namespace ControlEntradaSalida
             return retval;
         }
 
+
+        private bool AgregarTarjetaUsuario(string id)
+        {
+            bool retval = false;            
+            string url = "POST /ISAPI/AccessControl/CardInfo/Record?format=json";
+            string CardInfo = "{{\"CardInfo\" : {{\"employeeNo\": \"{0}\",\"cardNo\": \"{0}\",\"cardType\": \"normalCard\",\"checkCardNo\": true }}}}";
+            string CardInfoValues = String.Format(CardInfo, id);
+
+            string outputString = null;
+            string outputStatus = null;
+            Common cmn = new Common();
+            string jsonresult = "";
+
+            bool result = cmn.ISAPIQuery(url, CardInfoValues, out outputString, out outputStatus);
+            bool flag = true;
+            if (result)
+            {
+                jsonresult = outputString;
+                
+            }
+            else
+            {
+                jsonresult = outputStatus;
+                flag = false;
+
+            }
+
+            string statusCode = "";
+            string subStatusCode = "";
+            string statusString = "";
+            try
+            {
+                dynamic DynamicData = JsonConvert.DeserializeObject(jsonresult);
+                statusCode = DynamicData.statusCode;
+                subStatusCode = DynamicData.subStatusCode;
+                statusString = DynamicData.statusString;
+
+                if (statusCode == "1" && statusString == "OK" && subStatusCode == "ok")
+                {
+                    retval = true;
+                }
+            } catch
+            {
+                MessageBox.Show("Ocurrió un error en al tratar de analizar la respuesta JSON de la consulta ISAPI en AgregarTarjetaUsuario()", "Error en análisis JSON", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            if (!flag)
+                MessageBox.Show("Ocurrió un error al intentar la consulta ISAPI en AgregarTarjetaUsuario. statusCode: " + statusCode + " subStatusCode: " + subStatusCode + " statusString: " + statusString, "Error en consulta ISAPI", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            return retval;
+
+        }
+
+
+        private List<EmpleadoData> CargarInfoUsuariosDispositivo(out string responseStatusStrg, out int totalMatches, out int numOfMatches, int searchResultPosition)
+        {
+            bool flag = true;
+            
+            responseStatusStrg = null;
+            totalMatches = 0;
+            numOfMatches = 0;
+            
+
+            List<EmpleadoData> listauserdata = new List<EmpleadoData>();
+            string url = "POST /ISAPI/AccessControl/UserInfo/Search?format=json";
+
+            string UserInfoSearchCond = "{ \"UserInfoSearchCond\": { \"searchID\": \"100\", \"searchResultPosition\": " + searchResultPosition.ToString() + ", \"maxResults\": 5000 } }";
+
+            string outputString = null;
+            string outputStatus = null;
+            
+            Common cmn = new Common();
+            string jsonresult = "";
+
+            bool result = cmn.ISAPIQuery(url, UserInfoSearchCond, out outputString, out outputStatus);
+            if (!result)
+            {
+                jsonresult = outputStatus;
+                try 
+                {
+                    dynamic DynamicData = JsonConvert.DeserializeObject(jsonresult);
+                    string statusCode = DynamicData.statusCode;
+                    string subStatusCode = DynamicData.subStatusCode;
+                    string statusString = DynamicData.statusString;
+                    MessageBox.Show("Ocurrió un error al intentar la consulta ISAPI en CargarInfoUsuariosDispositivo(). statusCode: " + statusCode + " subStatusCode: " + subStatusCode + " statusString: " + statusString, "Error en consulta ISAPI", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                } catch
+                {
+                    MessageBox.Show("Ocurrió un error en al tratar de analizar la respuesta JSON de la consulta ISAPI en CargarInfoUsuariosDispositivo() con result = false", "Error en análisis JSON", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
+                }
+                return null;                
+            }
+            else
+            {
+                          
+                jsonresult = outputString;
+                try
+                {
+                    dynamic DynamicData = JsonConvert.DeserializeObject(jsonresult);
+                    totalMatches = Convert.ToInt32(DynamicData.UserInfoSearch.totalMatches);
+                    numOfMatches = Convert.ToInt32(DynamicData.UserInfoSearch.numOfMatches);
+                    responseStatusStrg = DynamicData.UserInfoSearch.responseStatusStrg;
+
+
+                    if (totalMatches > 0 && numOfMatches > 0)
+                    {
+                        for (int i = 0; i < numOfMatches; i++)
+                        {
+                            try
+                            {
+                                EmpleadoData ed = new EmpleadoData();
+                                ed.employeeNum = DynamicData.UserInfoSearch.UserInfo[i].employeeNo;
+                                ed.name = DynamicData.UserInfoSearch.UserInfo[i].name;
+                                ed.userType = DynamicData.UserInfoSearch.UserInfo[i].userType;
+                                ed.validEnable = DynamicData.UserInfoSearch.UserInfo[i].Valid.enable;
+                                ed.beginTime = DynamicData.UserInfoSearch.UserInfo[i].Valid.beginTime;
+                                ed.endTime = DynamicData.UserInfoSearch.UserInfo[i].Valid.endTime;
+                                ed.numOfCard = DynamicData.UserInfoSearch.UserInfo[i].numOfCard;
+                                ed.numOfFace = DynamicData.UserInfoSearch.UserInfo[i].numOfFace;
+                                listauserdata.Add(ed);
+                              
+                                ed = null;
+                            }
+                            catch
+                            {
+                                MessageBox.Show("Ocurrió un error en al tratar de analizar la respuesta JSON de la consulta ISAPI en CargarInfoUsuariosDispositivo() con result = true. Error al tratar de hacer parsing de UserInfoSearch.UserInfo[i]", "Error en análisis JSON", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                flag = false;
+                                break;
+                            }
+                        }
+
+
+                    }
+                } catch
+                {
+                    MessageBox.Show("Consulta ISAPI correcta pero ocurrió un error en al tratar de analizar la respuesta JSON de la respuesta ISAPI en CargarInfoUsuariosDispositivo() con result = true", "Error en análisis JSON", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
+                }
+                
+            }
+            if (flag)
+                return listauserdata;
+            else
+                return null;
+        }
         private String[] ConsultarTarjetas()
         {
             String[] retval = null;
@@ -104,9 +251,12 @@ namespace ControlEntradaSalida
             return retval;
         }
 
-        private EmpleadoData ConsultarDatosEmpleado(string id)
+
+
+        private EmpleadoData ConsultarDatosEmpleado(string id, out string jsondata)
         {
             EmpleadoData ed = null;
+            jsondata = "";
             string url = "POST /ISAPI/AccessControl/UserInfo/Search?format=json";
             string UserInfoSearchCond = "{ \"UserInfoSearchCond\": { \"searchID\": \"200\", \"searchResultPosition\": 0, \"maxResults\": 1, \"EmployeeNoList\" : [ { \"employeeNo\": \"" + id + "\" } ] } }";
             string resultJSON = null;
@@ -129,7 +279,9 @@ namespace ControlEntradaSalida
                 ed.validEnable = DynamicDataEmployee.UserInfoSearch.UserInfo[0].Valid.enable;
                 ed.beginTime = DynamicDataEmployee.UserInfoSearch.UserInfo[0].Valid.beginTime;
                 ed.endTime = DynamicDataEmployee.UserInfoSearch.UserInfo[0].Valid.endTime;
+                ed.numOfCard = DynamicDataEmployee.UserInfoSearch.UserInfo[0].numOfCard;
                 ed.numOfFace = DynamicDataEmployee.UserInfoSearch.UserInfo[0].numOfFace;
+                jsondata = resultJSON;
             }
             return ed;
         }
@@ -143,7 +295,9 @@ namespace ControlEntradaSalida
             lvi.SubItems.Add(ed.validEnable);
             lvi.SubItems.Add(ed.beginTime);
             lvi.SubItems.Add(ed.endTime);
+            lvi.SubItems.Add(ed.numOfCard);
             lvi.SubItems.Add(ed.numOfFace);
+            lvi.SubItems.Add("");
             listView.Items.Add(lvi);
             lvi = null;
         }
@@ -187,20 +341,32 @@ namespace ControlEntradaSalida
             retval = cmn.Login(Common.ip, Common.puerto, Common.usuario, Common.contrasena, out msg);
             if (retval)
             {
-                String[] numtarjetas = ConsultarTarjetas();
+                if (this.listView.Items.Count > 0)
+                    this.listView.Items.Clear();
 
-                if (numtarjetas != null)
+                string responseStatusStrg = "MORE";
+                int totalMatches = 0;
+                int numOfMatches = 0;
+                int searchResultPosition = numOfMatches;
+
+             
+                while (responseStatusStrg == "MORE")
                 {
-                    for (int i = 0; i < numtarjetas.Length; i++)
+ 
+                    List<EmpleadoData> listaed = CargarInfoUsuariosDispositivo(out responseStatusStrg, out totalMatches, out numOfMatches, searchResultPosition);
+                    searchResultPosition += numOfMatches;
+                    
+                    if (listaed != null)
                     {
-                        EmpleadoData ed = ConsultarDatosEmpleado(numtarjetas[i]);
-                        if (ed != null)
+                        foreach (EmpleadoData u in listaed)
                         {
-                            AgregarDatosListView(ed);
-                            ed = null;
+                            AgregarDatosListView(u);
                         }
                     }
                 }
+
+                this.textBoxTotal.Text = this.listView.Items.Count.ToString();
+
             }
         }
 
@@ -215,19 +381,171 @@ namespace ControlEntradaSalida
             DialogResult dialogResult = MessageBox.Show("Los usuarios seleccionados serán eliminados sin posibilidad de recuperación. ¿Desea continuar?", "Confirmar acción de borrado", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (dialogResult == DialogResult.Yes)
             {
-                ListView.CheckedListViewItemCollection itemColl = this.listView.CheckedItems;
-                foreach (ListViewItem item in itemColl)
+                this.listView.BeginInvoke(new Action(() =>
                 {
-                    string id = item.Text;
-                    bool result = false;
-                    result = EliminarEmpleadoDispositivo(id);
-                    if (result)
-                    {
-                        item.Remove();
+                    ListView.CheckedListViewItemCollection itemColl = this.listView.CheckedItems;
+                    foreach (ListViewItem item in itemColl)
+                     {
+                    
+                        string id = item.Text;
+                        bool result = false;
+                        result = EliminarEmpleadoDispositivo(id);
+                        if (result)
+                        {
+                            item.Remove();
+                        }
+                   
+
                     }
+                }));
+            }
+        }
+
+
+        private bool EliminarUsuariosTablaUsuariosDispositivo()
+        {
+            bool retval = false;
+
+            Common cmn = new Common();
+            string connstr = cmn.obtenerCadenaConexion();
+            BaseDatosMySQL bd = new BaseDatosMySQL();
+            bd.conectarMySQL(connstr);
+            if (bd.conn != null)
+            {
+
+                try
+                {
+                    string sql = "DELETE FROM usuarios_dispositivo";
+                    MySqlCommand cmd = new MySqlCommand(sql, bd.conn);
+                    cmd.ExecuteNonQuery();
+                    bd.desconectarMySQL();
+
+                    retval = true;
 
                 }
+                catch (MySqlException ex)
+                {
+                    string errstr = ex.Number.ToString() + " " + ex.Message;
+                    MessageBox.Show(errstr, "Error en InsertarUsuarioTablaUsuariosDispositivo()", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
             }
+            else
+            {
+                string errstr = bd.errornum + " " + bd.errormsg + "bd = null";
+                MessageBox.Show(errstr, "Error en InsertarUsuarioTablaUsuariosDispositivo()", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            return retval;
+        }
+        private bool InsertarUsuarioTablaUsuariosDispositivo(string jsondata, byte[] img = null)            
+        {
+            bool retval = false;
+
+            Common cmn = new Common();
+            string connstr = cmn.obtenerCadenaConexion();
+            BaseDatosMySQL bd = new BaseDatosMySQL();
+            bd.conectarMySQL(connstr);
+            if (bd.conn != null)
+            {
+                
+                try
+                {
+                    string sql = "INSERT INTO usuarios_dispositivo (userdata, image) " +
+                                 "VALUES (@userdata, @image)";
+                    MySqlCommand cmd = new MySqlCommand(sql, bd.conn);                    
+                    
+                    cmd.Parameters.AddWithValue("@userdata", jsondata);
+                    if (img != null)
+                        cmd.Parameters.Add("@image", MySqlDbType.Blob).Value = img;
+                    else
+                        cmd.Parameters.AddWithValue("@image", "");
+                    cmd.ExecuteNonQuery();
+                    bd.desconectarMySQL();
+
+                    retval = true;
+
+                }
+                catch (MySqlException ex)
+                {
+                    string errstr = ex.Number.ToString() + " " + ex.Message;
+                    MessageBox.Show(errstr, "Error en InsertarUsuarioTablaUsuariosDispositivo()", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+            }
+            else
+            {
+                string errstr = bd.errornum + " " + bd.errormsg + "bd = null";
+                MessageBox.Show(errstr, "Error en InsertarUsuarioTablaUsuariosDispositivo()", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            return retval;
+        }
+
+       
+        private void buttonBackup_Click(object sender, EventArgs e)
+        {
+            /*if (this.listView.Items.Count > 0)
+            {
+                EliminarUsuariosTablaUsuariosDispositivo();
+                ListView.ListViewItemCollection items = this.listView.Items;
+                string jsondata = null;
+                byte[] bytesimagen = null;
+                Common cmn = new Common();
+                string msg = null;
+                foreach(ListViewItem item in items)
+                {
+                    bytesimagen = cmn.ObtenerImagenUsuario(item.Text, out msg);      
+                    
+                    ConsultarDatosEmpleado(item.Text, out jsondata);
+                    if (InsertarUsuarioTablaUsuariosDispositivo(jsondata, bytesimagen))
+                    {
+                        item.SubItems[8].Text = "OK: Usuario respaldado";
+                        item.ForeColor = Color.Green;
+                    }
+                    else 
+                    {
+                        item.SubItems[8].Text = "FALLO: Ocurrieron errores al intentar respaldar este usuario";
+                        item.ForeColor = Color.Red;
+                    }
+                }
+            }*/
+        }
+
+        private void buttonAgregarTarjeta_Click(object sender, EventArgs e)
+        {
+            if (this.listView.Items.Count > 0)
+            {
+                ListView.ListViewItemCollection items = this.listView.Items;
+
+                foreach (ListViewItem item in items)
+                {
+                    if (item.SubItems[6].Text == "0")
+                    {
+                        AgregarTarjetaUsuario(item.Text);
+                    }
+                }
+            }
+        }
+
+        private void checkBoxSeleccionarTodos_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.listView.Items.Count > 0)
+            {
+                ListView.ListViewItemCollection items = this.listView.Items;
+
+                foreach (ListViewItem item in items)
+                {
+                    if (this.checkBoxSeleccionarTodos.Checked == true)
+                        item.Checked = true;
+                    else
+                        item.Checked = false;
+                }
+            }
+           
+        }
+
+        private void listView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 
@@ -239,6 +557,7 @@ namespace ControlEntradaSalida
         public string validEnable { get; set; }
         public string beginTime { get; set; }
         public string endTime { get; set; }
+        public string numOfCard {get; set;}
         public string numOfFace { get; set; }
 
         public EmpleadoData()
@@ -249,6 +568,7 @@ namespace ControlEntradaSalida
             this.validEnable = null;
             this.beginTime = null;
             this.endTime = null;
+            this.numOfCard = null;
             this.numOfFace = null;
         }
     }

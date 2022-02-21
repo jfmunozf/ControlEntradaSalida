@@ -41,7 +41,6 @@ namespace ControlEntradaSalida
             this.textBoxDescripcion = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.buttonCancelar = new System.Windows.Forms.Button();
-            this.buttonLogin = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.txtPuerto = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -50,6 +49,7 @@ namespace ControlEntradaSalida
             this.txtUsuario = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.txtDireccionIP = new System.Windows.Forms.TextBox();
+            this.buttonLogin = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -172,23 +172,15 @@ namespace ControlEntradaSalida
             // 
             // buttonCancelar
             // 
+            this.buttonCancelar.Image = global::ControlEntradaSalida.Properties.Resources.Cancel_grey_16x;
+            this.buttonCancelar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.buttonCancelar.Location = new System.Drawing.Point(169, 321);
             this.buttonCancelar.Name = "buttonCancelar";
-            this.buttonCancelar.Size = new System.Drawing.Size(75, 23);
+            this.buttonCancelar.Size = new System.Drawing.Size(89, 23);
             this.buttonCancelar.TabIndex = 9;
             this.buttonCancelar.Text = "&Cancelar";
             this.buttonCancelar.UseVisualStyleBackColor = true;
             this.buttonCancelar.Click += new System.EventHandler(this.buttonCancelar_Click);
-            // 
-            // buttonLogin
-            // 
-            this.buttonLogin.Location = new System.Drawing.Point(8, 321);
-            this.buttonLogin.Name = "buttonLogin";
-            this.buttonLogin.Size = new System.Drawing.Size(75, 23);
-            this.buttonLogin.TabIndex = 8;
-            this.buttonLogin.Text = "&Login";
-            this.buttonLogin.UseVisualStyleBackColor = true;
-            this.buttonLogin.Click += new System.EventHandler(this.buttonLogin_Click);
             // 
             // label4
             // 
@@ -258,6 +250,18 @@ namespace ControlEntradaSalida
             this.txtDireccionIP.Name = "txtDireccionIP";
             this.txtDireccionIP.Size = new System.Drawing.Size(181, 20);
             this.txtDireccionIP.TabIndex = 3;
+            // 
+            // buttonLogin
+            // 
+            this.buttonLogin.Image = global::ControlEntradaSalida.Properties.Resources.Login_16x;
+            this.buttonLogin.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonLogin.Location = new System.Drawing.Point(8, 321);
+            this.buttonLogin.Name = "buttonLogin";
+            this.buttonLogin.Size = new System.Drawing.Size(89, 23);
+            this.buttonLogin.TabIndex = 8;
+            this.buttonLogin.Text = "&Login";
+            this.buttonLogin.UseVisualStyleBackColor = true;
+            this.buttonLogin.Click += new System.EventHandler(this.buttonLogin_Click);
             // 
             // LoginDevice
             // 
